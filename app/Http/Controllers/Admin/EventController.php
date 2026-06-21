@@ -111,7 +111,7 @@ class EventController extends Controller
             if ($event->poster_path && Storage::disk('public')->exists($event->poster_path)) {
                 Storage::disk('public')->delete($event->poster_path);
             }
-            
+
             $file = $request->file('poster');
             $path = $file->store('events', 'public');
             $data['poster_path'] = $path;
@@ -122,11 +122,12 @@ class EventController extends Controller
         return redirect()->route('admin.events.index')->with('success', 'Rincian data event berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Event $event)
     {
+        if ($event->poster_path) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($event->poster_path);
+        }
+
         $event->delete();
         return redirect()->route('admin.events.index')->with('success', 'Data event berhasil dihapus secara permanen.');
     }
